@@ -1,0 +1,27 @@
+archivesBaseName = "core"
+
+sourceSets {
+	main {
+		java{
+			srcDir "src/main/java"
+		}
+		resources {
+			srcDir "src/main/resources"
+		}
+	}
+	test {
+		java{
+			srcDir "src/test/java"
+		}
+	}
+}
+
+bootRepackage {
+	// 預設是 true 會請 gradle 打包 original jar 沒意義
+	// 這邊若設 true 則打包 war 檔會失敗
+	enabled = false
+}
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter')
+}

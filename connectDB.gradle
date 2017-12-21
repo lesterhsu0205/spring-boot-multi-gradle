@@ -1,0 +1,99 @@
+import org.apache.tools.ant.taskdefs.SQLExec
+import org.apache.tools.ant.types.EnumeratedAttribute
+
+buildscript {
+    apply from: "prop.gradle"
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "mysql:mysql-connector-java:${versions.mysql}"
+        classpath "org.mariadb.jdbc:mariadb-java-client:${versions.mariadb}"
+    }
+}
+
+task connectDB() {
+    doLast {
+        def mysql = buildscript.configurations.classpath.find { it.toString().contains("mysql-connector-java") }
+        URLClassLoader loader = GroovyObject.class.classLoader
+        loader.addURL(file(mysql).toURL())
+
+        def db = [url: "jdbc:mysql://127.0.0.1:3306/angular1x?autoReconnect=true",
+                  user: "root", password: "root", driver: 'com.mysql.jdbc.Driver']
+        def sql = groovy.sql.Sql.newInstance(db.url, db.user, db.password, db.driver)
+        print("連線成功")
+    }
+}
+
+task connectDB1() {
+    doLast {
+        def mysql = buildscript.configurations.classpath.find { it.toString().contains("mariadb-java-client") }
+        URLClassLoader loader = GroovyObject.class.classLoader
+        loader.addURL(file(mysql).toURL())
+
+
+        def url = 'jdbc:mariadb://127.0.0.1:3306/testv1'
+        def user = 'root'
+        def password = 'root'
+        def driver = 'org.mariadb.jdbc.Driver'
+        def sql = Sql.newInstance(url, user, password, driver)
+
+        sql.execute '''
+	DROP TABLE IF EXISTS `cfg_role222111`;
+	'''
+
+        sql.execute '''
+	CREATE TABLE IF NOT EXISTS `cfg_role222111` (
+	  `ID` int(11) NOT NULL,
+	  `CODE` varchar(50) NOT NULL,
+	  PRIMARY KEY (`ID`)
+	)
+	'''
+
+        sql.close()
+    }
+}
+
+task connectDB2() {
+    doLast {
+        def mysql = buildscript.configurations.classpath.find { it.toString().contains("mariadb-java-client") }
+        URLClassLoader loader = GroovyObject.class.classLoader
+        loader.addURL(file(mysql).toURL())
+
+        def db = [url: "jdbc:mariadb://127.0.0.1:3306/testv1",
+                  user: "root", password: "root", driver: 'org.mariadb.jdbc.Driver']
+        def sql = groovy.sql.Sql.newInstance(db.url, db.user, db.password, db.driver)
+        print("連線成功")
+
+        sql.close()
+    }
+}
+
+
+
+task connectDB3_batch() {
+    doLast {
+        def mysql = buildscript.configurations.classpath.find { it.toString().contains("mariadb-java-client") }
+        URLClassLoader loader = SQLExec.class.classLoader
+        loader.addURL(file(mysql).toURL())
+
+        SQLExec sqlExec = new SQLExec()
+        //設定參數
+        sqlExec.setDriver("org.mariadb.jdbc.Driver")
+        sqlExec.setUrl("jdbc:mariadb://127.0.0.1:3306/testv1")
+        sqlExec.setUserid("root")
+        sqlExec.setPassword("root")
+        //執行的腳本
+        sqlExec.setSrc(new File("C:/Users/HYT/Desktop/eeee.sql"))
+        sqlExec.setOnerror((SQLExec.OnError)(EnumeratedAttribute.getInstance(
+                SQLExec.OnError.class, "abort")))
+        //是否輸出
+        sqlExec.setPrint(true)
+        sqlExec.setOutput(new File("C:/Users/HYT/Desktop/rrrr.sql"))
+
+        sqlExec.setProject(new org.apache.tools.ant.Project()) //要指定這個不然會出錯, 網路寫的
+        sqlExec.execute()
+    }
+}

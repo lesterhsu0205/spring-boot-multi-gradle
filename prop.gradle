@@ -1,0 +1,13 @@
+ext {
+    versions = [spring         : "4.2.5.RELEASE",
+                spring_security: "4.1.0.RELEASE",
+                spring_boot:"1.5.9.RELEASE",
+                mysql:"5.1.37",
+                mariadb:"2.1.2",
+                project_vendor:"lester.com",
+                project_ver:"1.0",
+                project_group:"com.lester",
+                project_encoding:"UTF-8",
+                project_web:"3.1",
+    ]
+}

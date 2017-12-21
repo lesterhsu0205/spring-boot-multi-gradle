@@ -1,0 +1,59 @@
+import java.nio.file.Paths
+import java.text.SimpleDateFormat
+
+ext {
+
+    // 設定包版版號
+    buildVer = { args ->
+        def proj = args.project
+        def numFilename = args.numFilename
+        def projResourceDir = Paths.get("${proj.projectDir}", "src/main/resources").toString()
+
+        println ">> build_ver.propties path:" + projResourceDir
+
+        //noinspection GroovyAssignabilityCheck
+        def buildVerFile = new File(projResourceDir, numFilename)
+        def buildVer = buildVerFile.text.toInteger()
+
+        println '>> Old build ver: ' + buildVerFile.text
+        buildVer++
+        println '>> New build ver: ' + buildVer
+
+        buildVerFile.text = buildVer
+
+        return buildVer
+
+    }
+
+    // 定義 Manifest
+    defaultManifest = {args ->
+        def proj = args.project
+        def projectVendor = args.projectVendor
+        // 如果未傳入 version，則預設 proj 屬性
+        def projectVersion = args.version ? args.version :  proj.version
+
+        return manifest {
+            def buildTimeAndDate = new Date()
+            def buildDate = new SimpleDateFormat('yyyy-MM-dd').format(buildTimeAndDate)
+            def buildTime = new SimpleDateFormat('HH:mm').format(buildTimeAndDate)
+
+            def git_cmd = "git rev-parse HEAD"
+            def git_proc = git_cmd.execute()
+
+            attributes 'SCM-Revision': git_proc.text.trim()
+            attributes 'Built-By': System.properties['user.name']
+            attributes 'Created-By': System.properties['java.version'] + " (" + System.properties['java.vendor'] + " " + System.getProperty("java.vm.version") + ")"
+            attributes 'Build-Host': InetAddress.localHost.hostName
+            attributes 'Build-Date': buildDate
+            attributes 'Build-Time': buildTime
+            attributes 'Timestamp': String.valueOf(System.currentTimeMillis())
+            attributes 'Specification-Title': proj.archivesBaseName
+            attributes 'Specification-Version': projectVersion
+            attributes 'Specification-Vendor': projectVendor
+            attributes 'Implementation-Title': proj.archivesBaseName
+            attributes 'Implementation-Version': projectVersion
+            attributes 'Implementation-Vendor': projectVendor
+            attributes 'provider': 'gradle'
+        }
+    }
+}

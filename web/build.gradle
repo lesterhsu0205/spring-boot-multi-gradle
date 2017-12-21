@@ -1,0 +1,107 @@
+archivesBaseName = "web"
+
+// 聽說是用來生成 eclipse web 項目要用... idea 可無視
+apply plugin: "eclipse-wtp"
+apply plugin: "war"
+
+// 似乎是不使用 war plugin 又需要 providedRuntime 才需設定
+//configurations {
+//	providedRuntime
+//}
+
+sourceSets {
+	main {
+		java{
+			srcDir "src/main/java"
+		}
+	}
+	test {
+		java{
+			srcDir "src/test/java"
+		}
+	}
+}
+
+bootRepackage {
+//	mainClass = ["com.lester.WebApplication"]
+	// 預設是 true 會請 gradle 打包 original war 沒意義
+	enabled = false
+}
+
+dependencies {
+	compile project(":core")
+	compile "org.springframework.boot:spring-boot-starter-web"
+//	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
+}
+
+// 設定 snapshot war 版號
+// 格式 project-web-1.0.123-SNAPSHOT.war
+task setSnapshotWarVer {
+	doFirst {
+		println "== Snapshot begin...."
+		println "================================================="
+		def buildVer = buildVer([project: project, numFilename: "build_ver.propties"])
+		version += "." + buildVer
+		version += "-SNAPSHOT"
+		println ">> new version: ${version}"
+		println ">> war: ${archivesBaseName}-${version}.war"
+		println "================================================="
+
+		war {
+			excludes = ['**/rebel.xml', '**/.keep']
+
+			manifest = defaultManifest([
+					project: project,
+					version: version,
+					projectVendor: "${versions.project_vendor}"
+			])
+		}
+	}
+}
+
+// 設定 release 包的版號
+// 格式 project-web-1.0.123.war
+task setReleaseWarVer {
+	doFirst {
+		println "== Release Begin..."
+		println "================================================="
+		def buildVer = buildVer([project: project, numFilename: "build_ver.propties"])
+		version += "." + buildVer
+		println ">> new version: ${version}"
+		println ">> war: ${archivesBaseName}-${version}.war"
+		println "================================================="
+
+		war {
+			excludes = ["**/rebel.xml", "**/.keep"]
+
+			manifest = defaultManifest([
+					project: project,
+					version: version,
+					projectVendor: "${versions.project_vendor}"
+			])
+
+		}
+
+//        sourceSets {
+//            main {
+//                resources {
+//                    srcDirs = ["src/main/resources", "src/main/resources-prod"]
+//                }
+//            }
+//        }
+	}
+}
+
+// 編譯 snapshot war
+task snapshot(dependsOn: ['setSnapshotWarVer', 'war']) {
+	doLast {
+		println '== Snapshot WAR Generate Over'
+	}
+}
+
+// 編譯 release war
+task release(dependsOn: ['setReleaseWarVer', 'war']) {
+	doLast {
+		println '== Release WAR Generate Over'
+	}
+}
