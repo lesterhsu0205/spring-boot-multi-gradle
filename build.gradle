@@ -89,6 +89,8 @@ subprojects { subproj ->
 
     dependencies {
 
+        compile "org.springframework.boot:spring-boot-starter-web"
+
         // 共用測試依賴
         testCompile('org.springframework.boot:spring-boot-starter-test')
 
