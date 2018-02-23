@@ -26,7 +26,7 @@ ext {
     }
 
     // 定義 Manifest
-    defaultManifest = {args ->
+    defineManifest = {args ->
         def proj = args.project
         def projectVendor = args.projectVendor
         // 如果未傳入 version，則預設 proj 屬性

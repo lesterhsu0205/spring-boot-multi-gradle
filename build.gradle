@@ -47,7 +47,7 @@ subprojects { subproj ->
         excludes = ['**/rebel.xml', '**/.keep']
         doFirst {
             // 生成 jar 包的時候按此規則生成 manifest 文件
-            manifest = defaultManifest([
+            manifest = defineManifest([
                     project      : subproj,
                     projectVendor: "${versions.project_vendor}"
             ])
@@ -58,7 +58,7 @@ subprojects { subproj ->
         classifier = 'javadoc'
         from 'build/docs/javadoc'
         doFirst {
-            manifest = defaultManifest([
+            manifest = defineManifest([
                     project      : subproj,
                     projectVendor: "${versions.project_vendor}"
             ])
@@ -69,7 +69,7 @@ subprojects { subproj ->
         classifier = 'sources'
         from sourceSets.main.allSource
         doFirst {
-            manifest = defaultManifest([
+            manifest = defineManifest([
                     project      : subproj,
                     projectVendor: "${versions.project_vendor}"
             ])

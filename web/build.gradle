@@ -49,7 +49,7 @@ task setSnapshotWarVer {
 		war {
 			excludes = ['**/rebel.xml', '**/.keep']
 
-			manifest = defaultManifest([
+			manifest = defineManifest([
 					project: project,
 					version: version,
 					projectVendor: "${versions.project_vendor}"
@@ -73,7 +73,7 @@ task setReleaseWarVer {
 		war {
 			excludes = ["**/rebel.xml", "**/.keep"]
 
-			manifest = defaultManifest([
+			manifest = defineManifest([
 					project: project,
 					version: version,
 					projectVendor: "${versions.project_vendor}"
